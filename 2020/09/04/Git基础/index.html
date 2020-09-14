@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Git基础 | oyjcodes | 待我代码编成，娶你为妻可好...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="Git">
+    <meta name="description" content="Git基础一                                                                                             avatar               四个区五个状态  —— 五种状态间的撤销操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git基础">
+<meta property="og:url" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="oyjcodes">
+<meta property="og:description" content="Git基础一                                                                                             avatar               四个区五个状态  —— 五种状态间的撤销操作">
+<meta property="og:locale" content="UTF_8">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/1.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/2.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/3.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/4.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/5.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/6.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/7.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/8.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/9.png">
+<meta property="article:published_time" content="2020-09-04T09:03:45.000Z">
+<meta property="article:modified_time" content="2020-09-08T09:52:46.666Z">
+<meta property="article:author" content="oyjcodes">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="oyjcodes" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">oyjcodes</h5>
+          <a href="mailto:1712051902@qq.com" title="1712051902@qq.com" class="mail">1712051902@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/oyjcodes" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Git基础</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="検索">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Git基础</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-09-04T09:03:45.000Z" itemprop="datePublished" class="page-time">
+  2020-09-04
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Git基础一"><span class="post-toc-number">1.</span> <span class="post-toc-text">Git基础一</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#四个区五个状态-——-五种状态间的撤销操作"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">四个区五个状态  —— 五种状态间的撤销操作</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#1-已经修改，但还未暂存（还没有执行-git-add）"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">1. 已经修改，但还未暂存（还没有执行 git add）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-已经修改，但还未提交（还没有执行-git-commit）"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">2. 已经修改，但还未提交（还没有执行 git commit）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#必须先执行git-reset-git-reset-–soft，否则无法撤销修改"><span class="post-toc-number">1.1.3.</span> <span class="post-toc-text">必须先执行git reset &#x3D; git reset –soft，否则无法撤销修改</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#通过git-reset-git-checkout-命令-gt-取消了工作区的修改，此时工作区的内容回退到了修改之前（hello-world-gt-123456uuu12）"><span class="post-toc-number">1.1.4.</span> <span class="post-toc-text">通过git reset + git checkout 命令-&gt;取消了工作区的修改，此时工作区的内容回退到了修改之前（hello world -&gt; 123456uuu12）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123-gt-hello-word123），彻底还原到上一次提交的状态且无法找回"><span class="post-toc-number">1.1.5.</span> <span class="post-toc-text">回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123 -&gt; hello word123），彻底还原到上一次提交的状态且无法找回</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#清空（不是删除所有内容，而是回退到修改之前的暂存区内容）"><span class="post-toc-number">1.1.6.</span> <span class="post-toc-text">清空（不是删除所有内容，而是回退到修改之前的暂存区内容）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#3-已提交，未推送"><span class="post-toc-number">1.1.7.</span> <span class="post-toc-text">3. 已提交，未推送</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#4-已推送到远程"><span class="post-toc-number">1.1.8.</span> <span class="post-toc-text">4. 已推送到远程</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">总结</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Git基础"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Git基础</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-09-04 17:03:45" datetime="2020-09-04T09:03:45.000Z"  itemprop="datePublished">2020-09-04</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="Git基础一"><a href="#Git基础一" class="headerlink" title="Git基础一"></a>Git基础一</h2><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="1.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<h3 id="四个区五个状态-——-五种状态间的撤销操作"><a href="#四个区五个状态-——-五种状态间的撤销操作" class="headerlink" title="四个区五个状态  —— 五种状态间的撤销操作"></a>四个区五个状态  —— 五种状态间的撤销操作</h3><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="2.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<table>
+<thead>
+<tr>
+<th>区</th>
+<th>名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工作区</td>
+<td>Working Area</td>
+</tr>
+<tr>
+<td>暂存区</td>
+<td>Stage</td>
+</tr>
+<tr>
+<td>本地仓库</td>
+<td>Local Repository</td>
+</tr>
+<tr>
+<td>远程仓库</td>
+<td>Remote Repository</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未修改</td>
+<td>UnModified</td>
+</tr>
+<tr>
+<td>已修改</td>
+<td>Modified</td>
+</tr>
+<tr>
+<td>已暂存</td>
+<td>Staged</td>
+</tr>
+<tr>
+<td>已提交</td>
+<td>Remote Repository</td>
+</tr>
+</tbody></table>
+<h4 id="1-已经修改，但还未暂存（还没有执行-git-add）"><a href="#1-已经修改，但还未暂存（还没有执行-git-add）" class="headerlink" title="1. 已经修改，但还未暂存（还没有执行 git add）"></a>1. 已经修改，但还未暂存（还没有执行 git add）</h4><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git diff</td>
+<td>检查的是工作区与暂存区之间的差异</td>
+</tr>
+<tr>
+<td>git checkout</td>
+<td>撤销项目下所有的修改</td>
+</tr>
+<tr>
+<td>git clean -f</td>
+<td>撤销新增的文件</td>
+</tr>
+<tr>
+<td>git clean -df</td>
+<td>撤销新增的文件和文件夹</td>
+</tr>
+</tbody></table>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="3.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<h4 id="2-已经修改，但还未提交（还没有执行-git-commit）"><a href="#2-已经修改，但还未提交（还没有执行-git-commit）" class="headerlink" title="2. 已经修改，但还未提交（还没有执行 git commit）"></a>2. 已经修改，但还未提交（还没有执行 git commit）</h4><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git diff –cached</td>
+<td>检查的是暂存区和本地仓库的差异</td>
+</tr>
+<tr>
+<td>git reset</td>
+<td>暂存区的修改恢复到工作区,即当前暂存区不存在最新的内容</td>
+</tr>
+<tr>
+<td>git reset –soft</td>
+<td>与git reset等价，回到已修改状态，修改的内容仍然在工作区中</td>
+</tr>
+<tr>
+<td>git reset –hard</td>
+<td>回到未修改状态，清空暂存区和工作区</td>
+</tr>
+</tbody></table>
+<h4 id="必须先执行git-reset-git-reset-–soft，否则无法撤销修改"><a href="#必须先执行git-reset-git-reset-–soft，否则无法撤销修改" class="headerlink" title="必须先执行git reset = git reset –soft，否则无法撤销修改"></a>必须先执行git reset = git reset –soft，否则无法撤销修改</h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="4.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="5.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+
+<h4 id="通过git-reset-git-checkout-命令-gt-取消了工作区的修改，此时工作区的内容回退到了修改之前（hello-world-gt-123456uuu12）"><a href="#通过git-reset-git-checkout-命令-gt-取消了工作区的修改，此时工作区的内容回退到了修改之前（hello-world-gt-123456uuu12）" class="headerlink" title="通过git reset + git checkout 命令-&gt;取消了工作区的修改，此时工作区的内容回退到了修改之前（hello world -&gt; 123456uuu12）"></a>通过git reset + git checkout 命令-&gt;取消了工作区的修改，此时工作区的内容回退到了修改之前（hello world -&gt; 123456uuu12）</h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="6.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="7.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<h4 id="回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123-gt-hello-word123），彻底还原到上一次提交的状态且无法找回"><a href="#回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123-gt-hello-word123），彻底还原到上一次提交的状态且无法找回" class="headerlink" title="回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123 -&gt; hello word123），彻底还原到上一次提交的状态且无法找回"></a>回到未修改状态，清空暂存区和工作区，此时工作区的内容回退到了修改之前（123 -&gt; hello word123），彻底还原到上一次提交的状态且无法找回</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard &#x3D; git reset + git checkout</span><br></pre></td></tr></table></figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="8.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+
+<h4 id="清空（不是删除所有内容，而是回退到修改之前的暂存区内容）"><a href="#清空（不是删除所有内容，而是回退到修改之前的暂存区内容）" class="headerlink" title="清空（不是删除所有内容，而是回退到修改之前的暂存区内容）"></a>清空（不是删除所有内容，而是回退到修改之前的暂存区内容）</h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="9.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+
+<h4 id="3-已提交，未推送"><a href="#3-已提交，未推送" class="headerlink" title="3. 已提交，未推送"></a>3. 已提交，未推送</h4><p>执行完commit之后，会在仓库中生成一个版本号(hash值)，标志这次提交。之后任何时候，都可以借助这个hash值<br>回退到这次提交。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git diff master origin/master</td>
+<td>查看本地仓库与本地远程仓库的差异</td>
+</tr>
+<tr>
+<td>git reset –hard HEAD^</td>
+<td>回退到本地仓库上一个版本</td>
+</tr>
+<tr>
+<td>git reset –hard <hash code></td>
+<td>回退到任意版本</td>
+</tr>
+<tr>
+<td>git reset –soft/git reset</td>
+<td>回退且回到已修改状态，修改仍保留在工作区中</td>
+</tr>
+</tbody></table>
+<h4 id="4-已推送到远程"><a href="#4-已推送到远程" class="headerlink" title="4. 已推送到远程"></a>4. 已推送到远程</h4><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git push -f orgin master</td>
+<td>强制覆盖远程分支</td>
+</tr>
+<tr>
+<td>git push -f</td>
+<td>如果之前已经用 -u 关联过，则可省略分支名</td>
+</tr>
+</tbody></table>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">首先，先用git status查看下当前状态。</span><br><span class="line"></span><br><span class="line">git reset可以作用于本地仓库，用于回退&#x2F;前进到任意版本，也可以作用于暂存区，用于撤销暂存区修改。有hard和soft2个参数。soft参数可以省略，soft参数表示撤销的修改仍放在工作区中。</span><br><span class="line"></span><br><span class="line">git checkout用于撤销删除和修改，git clean用于撤销新增。</span><br><span class="line"></span><br><span class="line">git diff可以查看工作区、暂存区、仓库之间的修改和差异，参数不同。</span><br></pre></td></tr></table></figure>
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最終更新：<time datetime="2020-09-08T09:52:46.666Z" itemprop="dateUpdated">2020-09-08 17:52:46</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2020/09/04/Git%E5%9F%BA%E7%A1%80/" target="_blank" rel="external">http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="oyjcodes">
+            oyjcodes
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/" rel="tag">Git</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&title=《Git基础》 — oyjcodes&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&title=《Git基础》 — oyjcodes&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Git基础》 — oyjcodes&url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2020/09/07/Redis%E7%B3%BB%E5%88%971/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">挑战Redis系列(1)——协议</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/07/11/HashMap/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">HashMap源码解析</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+<section class="comments" id="comments">
+    <!-- UY BEGIN -->
+    <div id="uyan_frame"></div>
+    <script src="http://v2.uyan.cc/code/uyan.js?uid=true"></script>
+    <!-- UY END -->
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        请我吃包辣条~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>このブログの内容物は<a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ja" target="_blank">クリエイティブ・コモンズ 表示 - 非営利 - 継承 4.0 国際ライセンスの下に提供されています</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>oyjcodes &copy; 2020</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&title=《Git基础》 — oyjcodes&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&title=《Git基础》 — oyjcodes&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Git基础》 — oyjcodes&url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/09/04/Git%E5%9F%BA%E7%A1%80/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLElEQVR42u3azW7CQAxFYd7/pVOp23bCuXZoNZ4zKwQE8mVh+e/1wuf6Pvfv/3x9/+nq11afPnBkyJCxLeO6Pas/JjfawfB7kyFDxjkM/nMkHHNe+viW78uQIUMGIK1ugjDI/8qQIUNGGnB50CRBWYYMGTIIg6RoPFnkgTgthh+oxWXIkLEhIx0M/OXrD843ZMiQsQnjCk8t1UtDdnxXMmTIGM2olZefW7DgKSnaB5EhQ8YIRi3YpUPKTlKISlYZMmQcyei0vdKgTMJ6PNmQIUPGIEYt1KaJXWcVgwd0GTJknMB4NrGrtdVI2A2SRRkyZIxgkNSwtu5A2mTpksfyN2XIkDGaUWtydW6I3Fxan8qQIWM2Iy0yOyGVJHzF0aYMGTJGM9KSstMUqzX6+UOUIUPGVEa/ucYL2vSqYGVNhgwZxzBqSxg8OKbX8tRThgwZJzB4EkaK3trYkqSSaL4hQ4aMAxjpeLI2qkwbam9IMmTIGM1IL+gH2doaR6silyFDxuYMflmtiZ8G9GJrT4YMGQcwaqsSadmZLljwxFSGDBmzGf0Fr2CbAw9Ni+NMGTJkDGVc4eGZ2D832mTIkDGIwQ8ZXvYDaFrKxhgZMmRsy0iDbOcd/sjiRyNDhowDGGmQ7YwQnvrmLwFXhgwZxzNIiCQNu7S4JQ9UhgwZMtJ2GKd2RgKtgCtDhowNGbVmfWfBolMYv9lxkyFDxjhGv9RMlzPS1v9jGBkyZOzH+AJIoA8ssujAyAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

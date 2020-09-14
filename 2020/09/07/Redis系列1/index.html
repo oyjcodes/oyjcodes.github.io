@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>挑战Redis系列(1)——协议 | oyjcodes | 待我代码编成，娶你为妻可好...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="数据库">
+    <meta name="description" content="1RESP(REdis Serialization Protocol),也就是专门为redis设计的一套序列化协议. 这个协议其实在redis的1.2版本时就已经出现了,但是到了redis2.0才最终成为redis通讯协议的标准  Redis通讯协议（TCP层）   特点 为什么    二进制安全的 不需要处理从一个进程传输到另一个进程的批量数据，因为它使用前缀长度来传输批量数据。   可读性高">
+<meta property="og:type" content="article">
+<meta property="og:title" content="挑战Redis系列(1)——协议">
+<meta property="og:url" content="http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/index.html">
+<meta property="og:site_name" content="oyjcodes">
+<meta property="og:description" content="1RESP(REdis Serialization Protocol),也就是专门为redis设计的一套序列化协议. 这个协议其实在redis的1.2版本时就已经出现了,但是到了redis2.0才最终成为redis通讯协议的标准  Redis通讯协议（TCP层）   特点 为什么    二进制安全的 不需要处理从一个进程传输到另一个进程的批量数据，因为它使用前缀长度来传输批量数据。   可读性高">
+<meta property="og:locale" content="UTF_8">
+<meta property="og:image" content="http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/1.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/2.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/3.png">
+<meta property="article:published_time" content="2020-09-07T15:29:56.000Z">
+<meta property="article:modified_time" content="2020-09-09T07:56:54.588Z">
+<meta property="article:author" content="oyjcodes">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="oyjcodes" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">oyjcodes</h5>
+          <a href="mailto:1712051902@qq.com" title="1712051902@qq.com" class="mail">1712051902@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/oyjcodes" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">挑战Redis系列(1)——协议</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="検索">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">挑战Redis系列(1)——协议</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-09-07T15:29:56.000Z" itemprop="datePublished" class="page-time">
+  2020-09-07
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Redis/">Redis</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Redis通讯协议（TCP层）"><span class="post-toc-number">1.</span> <span class="post-toc-text">Redis通讯协议（TCP层）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#RESP数据类型"><span class="post-toc-number">2.</span> <span class="post-toc-text">RESP数据类型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简单字符串"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">简单字符串</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#错误消息"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">错误消息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#长字符串"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">长字符串</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#整型数字"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">整型数字</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#数组"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">数组</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#request-response模型"><span class="post-toc-number">3.</span> <span class="post-toc-text">request-response模型</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#测试和验证"><span class="post-toc-number">4.</span> <span class="post-toc-text">测试和验证</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#运行结果"><span class="post-toc-number">5.</span> <span class="post-toc-text">运行结果</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Redis系列1"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">挑战Redis系列(1)——协议</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-09-07 23:29:56" datetime="2020-09-07T15:29:56.000Z"  itemprop="datePublished">2020-09-07</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Redis/">Redis</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RESP(REdis Serialization Protocol),也就是专门为redis设计的一套序列化协议. 这个协议其实在redis的1.2版本时就已经出现了,但是到了redis2.0才最终成为redis通讯协议的标准</span><br></pre></td></tr></table></figure>
+
+<h2 id="Redis通讯协议（TCP层）"><a href="#Redis通讯协议（TCP层）" class="headerlink" title="Redis通讯协议（TCP层）"></a>Redis通讯协议（TCP层）</h2><table>
+<thead>
+<tr>
+<th>特点</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>二进制安全的</td>
+<td>不需要处理从一个进程传输到另一个进程的批量数据，因为它使用前缀长度来传输批量数据。</td>
+</tr>
+<tr>
+<td>可读性高</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>快速解析</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>易于实现</td>
+<td>简单</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">注意:此处概述的协议仅用于客户端 - 服务器通信。 Redis Cluster使用不同的二进制协议，以便在节点之间交换消息。</span><br></pre></td></tr></table></figure>
+
+<h2 id="RESP数据类型"><a href="#RESP数据类型" class="headerlink" title="RESP数据类型"></a>RESP数据类型</h2><p>Redis协议将传输的结构数据分为5种类型，第一个字节的符号来表示不同的数据类型,单元结束时统一加上回车换行符号 \r\n。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>标识符</th>
+<th>形式</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单字符串（simple string）</td>
+<td>+</td>
+<td>放在第一个字节</td>
+<td>“+OK\r\n”</td>
+</tr>
+<tr>
+<td>错误消息（error）</td>
+<td>-</td>
+<td>放在第一个字节</td>
+<td>“-ERR unknown command ‘foobar’\r\n”</td>
+</tr>
+<tr>
+<td>长字符串（bulk string）&lt;512M</td>
+<td>$</td>
+<td>放在第一个字节，后面跟字符串的长度</td>
+<td>“$0\r\n”   –$后面的0表示这是一个空字符串</td>
+</tr>
+<tr>
+<td>整型数字（integer）</td>
+<td>:</td>
+<td>放在第一个字节，后面跟整形的字符串</td>
+<td>“:1000\r\n”</td>
+</tr>
+<tr>
+<td>数组（arrays）</td>
+<td>*</td>
+<td>放在第一个字节，后面跟数组的长度</td>
+<td>“<em>0\r\n”   –</em>后面的0表示表示空的数组</td>
+</tr>
+</tbody></table>
+<h3 id="简单字符串"><a href="#简单字符串" class="headerlink" title="简单字符串"></a>简单字符串</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">simple string 的第一个字节是个&quot;+&quot;(加号), 后面接着的是字符串的内容, 最后以CRLF(\r\n)结尾.例如:</span><br><span class="line">&quot;+hello world\r\n&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="错误消息"><a href="#错误消息" class="headerlink" title="错误消息"></a>错误消息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error其实和string是类似的, 但是RESP为了能让不同客户端把这种error和正常的返回结果区分开来对待 (例如redis返回error的话,就抛出异常),特意多设计了这个数据类型。error类型的第一个字节是&quot;-&quot;(减号), 后面接着的是错误的信息, 最后以CRLF(\r\n)结尾,例如:</span><br><span class="line">-ERR unknown command &#39;sets&#39;\r\n&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="长字符串"><a href="#长字符串" class="headerlink" title="长字符串"></a>长字符串</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">本质上也是字符串,跟普通字符串区分开来, 它的第一个字节是&quot;$&quot;(美元符号),紧接着是一个整数,表示字符串的字节数,字节数后面接一个CRLF. CRLF后面是字符串的内容, 最后以一个CRLF结尾. 例如:</span><br><span class="line"></span><br><span class="line">&quot;$0\r\n&quot;   --$后面的0表示这是一个空字符串</span><br><span class="line"></span><br><span class="line">&quot;$-1\r\n&quot;  -- $后面的-1表示这是一个null字符串,Null Bulk String要求客户端返回空对象,而不能简单地返回个空字符串</span><br><span class="line"></span><br><span class="line">&quot;$\r\n6ABCDEF\r\n&quot;  -- ABCDEF是6个字节,所以$后面是6</span><br></pre></td></tr></table></figure>
+<h3 id="整型数字"><a href="#整型数字" class="headerlink" title="整型数字"></a>整型数字</h3><p>“:29\r\n”</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">第一个字节是&quot;*&quot;(星号), 紧接着后面是一个数字,表示这个数组的长度,数字后面是一个CRLF. 需要注意的是这个CRLF之后才是数组的真正内容, 而且数组内容可以是任意类型, 包括arrays和bulk string, 每个元素也要以CRLF结尾. 最后以CRLF(\r\n)结尾. 例如:</span><br><span class="line"></span><br><span class="line">&quot;*0\r\n&quot;   --*后面的0表示表示空的数组</span><br><span class="line"></span><br><span class="line">&quot;*-1\r\n&quot;  --*后面的-1表示表示是null数组</span><br><span class="line"></span><br><span class="line">&quot;*5\r\n     -- *5表示这是一个拥有5个元素的数组</span><br><span class="line">+bar\r\n    -- 第1个元素是简单的字符串</span><br><span class="line">-unknown command\r\n      -- 第2个元素是个异常</span><br><span class="line">:3\r\n      -- 第3个元素是个整数</span><br><span class="line">$3\r\n      -- 第4个元素是长度为3个字节的长字符串foo</span><br><span class="line">foo\r\n     -- 第4个元素的内容</span><br><span class="line">*3\r\n      -- 第5个元素又是个数组</span><br><span class="line">:1\r\n      -- 第5个元素数组的第1元素</span><br><span class="line">:2\r\n      -- 第5个元素数组的第2元素</span><br><span class="line">:3\r\n      -- 第5个元素数组的第3元素</span><br><span class="line">&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="request-response模型"><a href="#request-response模型" class="headerlink" title="request-response模型"></a>request-response模型</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. redis发送一个命令到服务端（一般组装成bulk string的数组）, 然后阻塞在socket.read()方法, 等待服务端的返回</span><br><span class="line">2. 服务端收到一个命令, 处理完成后将数据发送回去给客户端</span><br></pre></td></tr></table></figure>
+<p>redis的大部分命令都是使用这种request-response模型进行通讯, 除了以下两种特殊的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. pipeline模式. 在pipeline模式下, 客户端可能会把多个命令收集在一起, 然后一并发送给服务端, 最后等待服务端把所有命令的执行响应一并发送回来</span><br><span class="line">2. pub&#x2F;sub, 发布订阅模式下, redis客户端只需要发送一次订阅命令</span><br></pre></td></tr></table></figure>
+<h2 id="测试和验证"><a href="#测试和验证" class="headerlink" title="测试和验证"></a>测试和验证</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@title</span>: RedisClient</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: 撸一个简单的客户端</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisClient</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Socket socket;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> OutputStream write;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> InputStream read;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        socket = <span class="keyword">new</span> Socket(<span class="string">"127.0.0.1"</span>,<span class="number">6379</span>);</span><br><span class="line">        write = socket.getOutputStream();</span><br><span class="line">        read = socket.getInputStream();</span><br><span class="line"></span><br><span class="line">        Scanner scan = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断是否还有输入</span></span><br><span class="line">        <span class="keyword">while</span> (scan.hasNextLine()) &#123;</span><br><span class="line">            String str = scan.nextLine();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 构造协议</span></span><br><span class="line">            String commannd = buildCommand(str);</span><br><span class="line"></span><br><span class="line">            System.out.println(<span class="string">"发送命令为：\r\n"</span> + commannd);</span><br><span class="line"></span><br><span class="line">            String result = sendCommand(commannd);</span><br><span class="line"></span><br><span class="line">            System.out.println(<span class="string">"响应命令为："</span> + result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        scan.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@Description</span>: 发送协议到客户端</span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@param</span></span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">sendCommand</span><span class="params">(String command)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        write.write(command.getBytes());</span><br><span class="line">        <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        read.read(bytes);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String(bytes,<span class="string">"UTF-8"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@Description</span>: 构建RESP协议</span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@param</span></span></span><br><span class="line"><span class="comment">    　* <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">buildCommand</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!StringUtils.isEmpty(str)) &#123;</span><br><span class="line">            String[] strs = str.split(<span class="string">" "</span>);</span><br><span class="line"></span><br><span class="line">            StringBuilder builder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            builder.append(<span class="string">"*"</span>).append(strs.length).append(<span class="string">"\r\n"</span>);</span><br><span class="line">            <span class="keyword">for</span> (String str1 : strs) &#123;</span><br><span class="line">                builder.append(<span class="string">"$"</span>).append(str1.length()).append(<span class="string">"\r\n"</span>);</span><br><span class="line">                builder.append(str1).append(<span class="string">"\r\n"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> builder.toString();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="1.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="2.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="3.png" alt="avatar" title="">
+                </div>
+                <div class="image-caption">avatar</div>
+            </figure><br>
+
+
+
+
+
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最終更新：<time datetime="2020-09-09T07:56:54.588Z" itemprop="dateUpdated">2020-09-09 15:56:54</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2020/09/07/Redis%E7%B3%BB%E5%88%971/" target="_blank" rel="external">http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="oyjcodes">
+            oyjcodes
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&title=《挑战Redis系列(1)——协议》 — oyjcodes&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&title=《挑战Redis系列(1)——协议》 — oyjcodes&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《挑战Redis系列(1)——协议》 — oyjcodes&url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2020/09/08/Stream%E6%8A%80%E8%83%BD/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">打怪之流式编程：Stream（一）</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2020/09/04/Git%E5%9F%BA%E7%A1%80/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Git基础</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+<section class="comments" id="comments">
+    <!-- UY BEGIN -->
+    <div id="uyan_frame"></div>
+    <script src="http://v2.uyan.cc/code/uyan.js?uid=true"></script>
+    <!-- UY END -->
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        请我吃包辣条~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>このブログの内容物は<a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ja" target="_blank">クリエイティブ・コモンズ 表示 - 非営利 - 継承 4.0 国際ライセンスの下に提供されています</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>oyjcodes &copy; 2020</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&title=《挑战Redis系列(1)——协议》 — oyjcodes&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&title=《挑战Redis系列(1)——协议》 — oyjcodes&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《挑战Redis系列(1)——协议》 — oyjcodes&url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/09/07/Redis%E7%B3%BB%E5%88%971/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACK0lEQVR42u3aS04DMRAFQO5/6SCxQkIe3msniHjKqwhNJi4vmv744yNej6/1/XOyVs//fPP1M09bGBgYb8vIt7L6Vv6e/Nfrd2JgYNyAkQTZnNGG1NVvJXvDwMDAeG5YzEMwBgYGxk7AbTc9OywMDAyMWRE7K03zTe8cGQYGxtmM2WDgbz6/fL6BgYHx7xmP0bpO0dpSNn/D8s0YGBhHM/IWWFJG5iVoi4kCMQYGxtGM2dWHZCt5sdomiL8cPQYGxtGMth2fN/FzcLKT4f8EDAyMN2Rcp1+zUjNHPm3MgIGBcTRjJyzOrna1IbUeYWJgYBzKyJvv139vC93Zby2PEgMD41BGGzR3EsH8zXngxsDAuAPjuS22dgxZ5K1xQxADA+M8RpQ5lsXkTjGcMJa32zAwMI5m5GPFfEiZp4NtebwMuBgYGEczZm36diTQjjaL4SUGBsZtGHmq17bkrsNrUWevnsTAwDia0aZu+1ci8rRvmKpiYGAcysjvZexvsR08FI08DAyM2zD2k7adEndrwImBgXEDRlK45pdQ2xFCe0DLgIuBgXEoow2Or7gWljfXWjwGBsa7Mx7laltss0tj7cULDAyMsxn5SoLprLh9xfAAAwPjPEYbOvMydWfAkIdvDAyM+zDq2xmj1n/CGNbiGBgYGKO2WnuNY4uKgYGBUbbA8tQwTz1/IWFgYNyAkRSxs6tjCaNtvWFgYNyNsV+a5httDyU/aAwMjEMZn+4MQc89yM4dAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
